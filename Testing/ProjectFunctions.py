@@ -23,7 +23,7 @@ def eucDist(origin, vectorizedGrid):
 
 def fofGrav(objIndex, vectObjPos, objMasses):
     '''
-    Calculate the acceleration on an object due to n bodies aroun it
+    Calculate the acceleration on an object due to n bodies around it
     
     objIndex: index of the object the force is acting on {int}
     vectObjPos: vectorized list of object positions {np.array of shape(n,m)}
@@ -40,9 +40,9 @@ def fofGrav(objIndex, vectObjPos, objMasses):
     pos_Obj = vectObjPos[:,objIndex] #Position of the origin object
     pos_Obj = np.reshape(pos_Obj, (len(pos_Obj),1)) #Reshape of a vector
 
-    forceOnObject = np.sum(G * objMasses[objIndex] * mass_WO_Obj * (pos_WO_Obj - pos_Obj) * (1/(eucDist(pos_Obj, pos_WO_Obj))**3), axis=0)
+    forceOnObject = np.sum(G * objMasses[objIndex] * mass_WO_Obj * (pos_WO_Obj - pos_Obj) * (1/(eucDist(pos_Obj, pos_WO_Obj))**3), axis=1)
     
-    return(forceOnObject)
+    return(forceOnObject, forceOnObject/objMasses[objIndex])
     
 def vectorizeGrid(grid): #Used for np.mgrid or a combined np.meshgrid
     '''
