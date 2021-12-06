@@ -60,3 +60,89 @@ def vectorizeGrid(grid): #Used for np.mgrid or a combined np.meshgrid
     vectorizedGrid = np.reshape(grid[:],(dimension,resolution)) #Get first vectorized component
 
     return(vectorizedGrid)
+
+def kinematic_Euler(h,iterations,pos_Array,vel_Array,mass_Array):
+    '''
+    h: stepsize
+    iterations: number of iterations
+    pos_Array: array of initial positions (x,y,z) [m] of shape ()
+    vel_Array: array of initial velocites [m/s] of shape ()
+    mass_Array: array of masses [kg] of shape ()
+    
+    return a vectorized list of positions, velocities, and accelerations for each body over the course of the simulation using Euler's method
+    '''
+    t = np.arange(0,iterations,1)
+    
+    acc_Array = fofGrav(0,pos_Array,mass_Array)[1]
+
+    for i in range(pos_Array.shape[1]-1):
+        acc_Array = np.vstack((acc_Array, fofGrav(i+1,pos_Array,mass_Array)[1]))
+    
+    acc_Array = acc_Array.T
+    
+    nObjects = pos_Array.shape
+
+    v = np.zeros((iterations,3,nObjects[1]))
+    r = np.zeros((iterations,3,nObjects[1]))
+    a = np.zeros((iterations,3,nObjects[1]))
+    
+    v[0] = vel_Array
+    r[0] = pos_Array
+    a[0] = acc_Array
+    
+    for i in range(0,len(t)-1):
+        v[i+1] = v[i] + h * a[i]
+        r[i+1] = r[i] + h * v[i]
+        
+        #Get accelerations
+        temp_Accel = fofGrav(0,r[i],mass_Array)[1]
+    
+        for k in range(pos_Array.shape[1]-1):
+            temp_Accel = np.vstack((temp_Accel, fofGrav(k+1,r[i],mass_Array)[1]))
+    
+        a[i+1] = temp_Accel.T
+        
+    return(r,v,a)
+
+def kinematic_Huens(h,iterations,pos_Array,vel_Array,mass_Array):
+    '''
+    h: stepsize
+    iterations: number of iterations simulation
+    pos_Array: array of initial positions (x,y,z) [m] of shape ()
+    vel_Array: array of initial velocites [m/s] of shape ()
+    mass_Array: array of masses [kg] of shape ()
+    
+    return a vectorized array of positions, velocities, and accelerations for each body over the course of the simulation using Huen's method
+    '''
+    t = np.arange(0,iterations,1)
+    
+    acc_Array = fofGrav(0,pos_Array,mass_Array)[1]
+
+    for i in range(pos_Array.shape[1]-1):
+        acc_Array = np.vstack((acc_Array, fofGrav(i+1,pos_Array,mass_Array)[1]))
+    
+    acc_Array = acc_Array.T
+    
+    nObjects = pos_Array.shape
+
+    v = np.zeros((iterations,3,nObjects[1]))
+    r = np.zeros((iterations,3,nObjects[1]))
+    a = np.zeros((iterations,3,nObjects[1]))
+    
+    v[0] = vel_Array
+    r[0] = pos_Array
+    a[0] = acc_Array
+    
+    for i in range(0,len(t)-1):
+        v[i+1] = v[i] + h * a[i]
+        r[i+1] = r[i] + (h/2)*(v[i]+v[i+1])
+        
+        #Get accelerations
+        temp_Accel = fofGrav(0,r[i],mass_Array)[1]
+    
+        for k in range(pos_Array.shape[1]-1):
+            temp_Accel = np.vstack((temp_Accel, fofGrav(k+1,r[i],mass_Array)[1]))
+    
+        a[i+1] = temp_Accel.T
+        
+    return(r,v,a)
