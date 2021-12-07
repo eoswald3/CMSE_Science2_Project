@@ -126,13 +126,13 @@ def kinematic_Euler(h,iterations,pos_Array,vel_Array,mass_Array):
         r[i+1] = r[i] + h * v[i]
         
         #Get accelerations
-        temp_Accel = fofGrav(0,r[i],mass_Array)[1]
+        acc_Array = fofGrav(0,r[i],mass_Array)[1]
     
         #Calculate the acceleration of the remaining objects
         for k in range(pos_Array.shape[1]-1):
-            temp_Accel = np.vstack((temp_Accel, fofGrav(k+1,r[i],mass_Array)[1]))
+            acc_Array = np.vstack((acc_Array, fofGrav(k+1,r[i],mass_Array)[1]))
     
-        a[i+1] = temp_Accel.T
+        a[i+1] = acc_Array.T
         
     return(r,v,a)
 
@@ -175,13 +175,13 @@ def kinematic_Huens(h,iterations,pos_Array,vel_Array,mass_Array):
         r[i+1] = r[i] + (h/2)*(v[i]+v[i+1])
         
         #Get accelerations
-        temp_Accel = fofGrav(0,r[i],mass_Array)[1]
+        acc_Array = fofGrav(0,r[i],mass_Array)[1]
     
         #Calculate the acceleration of the remaining objects
         for k in range(pos_Array.shape[1]-1):
-            temp_Accel = np.vstack((temp_Accel, fofGrav(k+1,r[i],mass_Array)[1]))
+            acc_Array = np.vstack((acc_Array, fofGrav(k+1,r[i],mass_Array)[1]))
     
-        a[i+1] = temp_Accel.T
+        a[i+1] = acc_Array.T
         
     return(r,v,a)
 
