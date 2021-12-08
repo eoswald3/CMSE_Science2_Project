@@ -232,4 +232,89 @@ def kinematic_Verlat(h,iterations,pos_Array,vel_Array,mass_Array):
     v[i+1] = v[i] + h*a[i] + (h/2) * (a[i+1]-a[i])
     
     return(r,v,a)
+
+def acc(w,t):
+    G = 4*np.pi**2
+    msun = 1
+    
+    func = np.zeros(6)
+    func[0] = w[3]
+    func[1] = w[4]
+    func[2] = w[5]
+    r = np.sqrt(w[0]**2 + w[1]**2 + w[2]**2)
+    func[3] = -(G*msun*w[0])/r**3
+    func[4] = -(G*msun*w[1])/r**3
+    func[5] = -(G*msun*w[2])/r**3
+    return func
+
+def get_coor_ode(initial_vals, tf, tau):  
+    r0, v0 = initial_vals
+    
+    x0 = r0[0]
+    y0 = r0[1]
+    z0 = r0[2]
+    vx0 = v0[0]
+    vy0 = v0[1]
+    vz0 = v0[2]
+    
+    w = [x0,y0,z0,vx0,vy0,vz0]
+
+    t0 = 0
+    tf = tf
+    tau = tau
+    
+    t = np.arange(t0,tf,tau)
+
+    sol = odeint(acc,w,t)
+
+    x = sol[:,0] * (1.496*10**11)
+    y = sol[:,1] * (1.496*10**11)
+    z = sol[:,2] * (1.496*10**11)
+    vx = sol[:,3]
+    vy = sol[:,4]
+    vz = sol[:,5]
+    
+    orbit = np.array([[x],[y],[z]])
+    
+    return orbit
+
+def calc_all_orbits(initial_vals, tf, tau):
+
+    all_orbits = []
+
+    for i in range(len(planet_vals)):
+        orbit = get_coor_ode(planet_vals[i], tf, tau)
+        orbit = orbit.reshape(np.shape(orbit)[0], np.shape(orbit)[-1])
+        all_orbits.append(orbit)
+    
+    return all_orbits
+
+def calculate_resid(all_orbits, correct_positions):
+    
+    # calculating predicted positions (r)
+    r_orbits = []
+
+    for i in range(len(all_orbits)):
+        r = np.sqrt(all_orbits[i][0]**2 + all_orbits[i][1]**2 + all_orbits[i][2]**2)
+        r_orbits.append(r)
+        
+        
+    # reshaping r    
+    r_orbits = np.array([r_orbits]).reshape(np.shape(r_orbits)[0], np.shape(r_orbits)[-1])
+
+    t = np.arange(1,366) 
+
+    r_orbits = np.array([r_orbits])/1.496e+11
+    
+    
+    # calculate residuals
+    resid = []
+
+    for i in range(len(r_orbits)):
+        val = correct_positions[i] - r_orbits[i]
+        resid.append(val)
+
+    resid = np.array([resid]).reshape(9,365)
+    
+    return resid
     
