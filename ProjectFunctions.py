@@ -5,6 +5,7 @@ Project: CMSE 201 Project
 Co-Authors: Patrick, Ethan, Emma 
 """
 import numpy as np
+from scipy.integrate import odeint
 
 def eucDist(origin, vectorizedGrid):
     '''
@@ -110,10 +111,11 @@ def kinematic_Euler(h,iterations,pos_Array,vel_Array,mass_Array):
     
     #Set up arrays for value storing/output
     nObjects = pos_Array.shape
+    numRows = int(len(t))
 
-    v = np.zeros((iterations,3,nObjects[1]))
-    r = np.zeros((iterations,3,nObjects[1]))
-    a = np.zeros((iterations,3,nObjects[1]))
+    v = np.zeros((numRows,3,nObjects[1]))
+    r = np.zeros((numRows,3,nObjects[1]))
+    a = np.zeros((numRows,3,nObjects[1]))
     
     #Set storage arrays 0 position to initial values
     v[0] = vel_Array
@@ -159,10 +161,11 @@ def kinematic_Huens(h,iterations,pos_Array,vel_Array,mass_Array):
     
     #Set up arrays for value storing/output
     nObjects = pos_Array.shape
+    numRows = int(len(t))
 
-    v = np.zeros((iterations,3,nObjects[1]))
-    r = np.zeros((iterations,3,nObjects[1]))
-    a = np.zeros((iterations,3,nObjects[1]))
+    v = np.zeros((numRows,3,nObjects[1]))
+    r = np.zeros((numRows,3,nObjects[1]))
+    a = np.zeros((numRows,3,nObjects[1]))
     
     #Set storage arrays 0 position to initial values
     v[0] = vel_Array
@@ -203,13 +206,14 @@ def kinematic_Verlat(h,iterations,pos_Array,vel_Array,mass_Array):
 
     for i in range(pos_Array.shape[1]-1):
         acc_Array = np.hstack((acc_Array,acceleration(i+1,pos_Array,mass_Array)))
-    
+
     #Set up arrays for value storing/output
     nObjects = pos_Array.shape
+    numRows = int(len(t))
 
-    v = np.zeros((iterations,3,nObjects[1]))
-    r = np.zeros((iterations,3,nObjects[1]))
-    a = np.zeros((iterations,3,nObjects[1]))
+    v = np.zeros((numRows,3,nObjects[1]))
+    r = np.zeros((numRows,3,nObjects[1]))
+    a = np.zeros((numRows,3,nObjects[1]))
     
     #Set storage arrays 0 position to initial values
     v[0] = vel_Array
@@ -227,9 +231,9 @@ def kinematic_Verlat(h,iterations,pos_Array,vel_Array,mass_Array):
         for k in range(pos_Array.shape[1]-1):
             acc_Array = np.hstack((acc_Array,acceleration(k+1,r[i+1],mass_Array)))
         
-    a[i+1] = acc_Array
-    
-    v[i+1] = v[i] + h*a[i] + (h/2) * (a[i+1]-a[i])
+        a[i+1] = acc_Array
+        
+        v[i+1] = v[i] + h*a[i] + (h/2) * (a[i+1]-a[i])
     
     return(r,v,a)
 
@@ -307,7 +311,7 @@ def get_coor_ode(initial_vals, tf, tau):
     return orbit
 
 def calc_all_orbits(planet_vals, tf, tau):
-     '''
+    '''
     initial_vals: array of arrays containing intitial positions and velocites for each planet.
     tf: final time 
     tau: time step
