@@ -217,16 +217,7 @@ class system():
             residuals = correct_pos - val
             return residuals
             
-    
-    def idealStepTimeValues(self, numYears):
-        iterTime = 365*numYears
-        h = 84000/numYears
-        t = np.arange(0,iterTime,1)
-        
-        print('To model', numYears, 'years with a step-size (h) value of 1, set h and time parameters to the following.')
-        print('h:',h)
-        print('time:',iterTime)
-    
+
     def generate_SimulationData(self, h, time=1, method=0):
         '''
         h: number of iterations in the simulation
