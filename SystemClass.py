@@ -212,7 +212,7 @@ class system():
             between the correct plantery positions and the predicted ones.
             '''
             
-            for i in range(len(sim.positions)):
+            for i in range(len(self.sim_positions)):
                 val = np.linalg.norm(self.sim_positions[i])
             residuals = correct_pos - val
             return residuals
@@ -248,20 +248,10 @@ class system():
         
         if method == 0:
             self.sim_positions, self.sim_velocities, self.sim_accelerations = pf.kinematic_Euler(h,time,self.positions,self.velocities,self.masses)
-            
-            
-#             #updating the positions and velocities arrays to the most recent of each
-#             self.positions = self.sim_positions[len(self.sim_positions)-1]
-#             self.velocities = self.sim_velocities[len(self.sim_positions)-1]
-            
+ 
         elif method == 1:
             self.sim_positions, self.sim_velocities, self.sim_accelerations = pf.kinematic_Huens(h,time,self.positions,self.velocities,self.masses)
-            
-            
-#             #updating the positions and velocities arrays to the most recent of each
-#             self.positions = self.sim_positions[len(self.sim_positions)-1]
-#             self.velocities = self.sim_velocities[len(self.sim_positions)-1]
-        
+
         elif method == 2:
             h2 = h/3.145e7 #Convert from seconds to years
             
@@ -269,12 +259,6 @@ class system():
             self.sim_positions = self.sim_positions/m_aU #Convert back to mks units
             self.sim_velocities = self.sim_velocities/mS_aUYr #Convert back to mks units
             self.sim_accelerations = self.sim_accelerations/earthMass #Convert back to mks units
-            
-            
-#             #updating the positions and velocities arrays to the most recent of each
-#             self.positions = self.sim_positions[len(self.sim_positions)-1]
-#             self.velocities = self.sim_velocities[len(self.sim_positions)-1]
-        
         
         else:
             raise ValueError(method,' Is not a valid method identifier, please input a valid identifier')
@@ -301,7 +285,7 @@ class system():
             
         names = self.bodies.index.to_list() #Get names of objects to be ploted 
         
-        for i in range(np.shape(solar_system.sim_positions)[2]):
+        for i in range(np.shape(self.sim_positions)[2]):
             xPlot = self.sim_positions[:,0,i] # Grab x position data of object i
             yPlot = self.sim_positions[:,1,i] # Grab y position data of object i
             zPlot = self.sim_positions[:,2,i] # Grab z position data of object i
@@ -320,7 +304,7 @@ class system():
         if second_View == True:
             ax1 = fig.add_subplot(212, projection='3d')
 
-            for i in range(np.shape(solar_system.sim_positions)[2]):
+            for i in range(np.shape(self.sim_positions)[2]):
                 xPlot = self.sim_positions[:,0,i] # Grab x position data of object i
                 yPlot = self.sim_positions[:,1,i] # Grab y position data of object i
                 zPlot = self.sim_positions[:,2,i] # Grab z position data of object i
@@ -342,11 +326,11 @@ class system():
         if axesTF == False:
             ax.axis('off')
 
-#         systemScale = 10e13
+        #systemScale = 10e13
 
-#         ax.set_xlim3d(-systemScale,systemScale)
-#         ax.set_ylim3d(-systemScale,systemScale)
-#         ax.set_zlim3d(-systemScale,systemScale)
+        #ax.set_xlim3d(-systemScale,systemScale)
+        #ax.set_ylim3d(-systemScale,systemScale)
+        #ax.set_zlim3d(-systemScale,systemScale)
 
         ax.set_title(title, y=0.95, fontsize=15)
         
