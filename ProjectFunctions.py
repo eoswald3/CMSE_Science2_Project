@@ -70,7 +70,7 @@ def acceleration(objIndex, vectObjPos, objMasses, G = 4*(np.pi**2/333000)):
     a = np.reshape(a,np.shape(pos_Obj)) #Reshape the acceleration array into the correct form
     
     return(a)
-    
+
 def vectorizeGrid(grid): #Used for np.mgrid or a combined np.meshgrid
     '''
     Vectorize and decompose the components of the grid
@@ -361,4 +361,4 @@ def calculate_resid(all_orbits, correct_positions):
     resid = np.array([resid]).reshape(9,365)
     
     return resid
-    
+
