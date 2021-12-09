@@ -234,22 +234,45 @@ def kinematic_Verlat(h,iterations,pos_Array,vel_Array,mass_Array):
     return(r,v,a)
 
 def acc(w,t):
+    '''
+    w: array of initial positions and velocities (6 comp)
+    t: time array 
+    
+    function used to calculate the acceleration of a planetary body as a result of of the sun. 
+    function is used inside the odeint command. 
+    '''
+    # define constants
     G = 4*np.pi**2
     msun = 1
     
+    # create new array of variables
     func = np.zeros(6)
     func[0] = w[3]
     func[1] = w[4]
     func[2] = w[5]
+    
+    # calculate distance between planet and sun at current time step
     r = np.sqrt(w[0]**2 + w[1]**2 + w[2]**2)
+    
+    # calculate acceleration in each basis direction
     func[3] = -(G*msun*w[0])/r**3
     func[4] = -(G*msun*w[1])/r**3
     func[5] = -(G*msun*w[2])/r**3
     return func
 
 def get_coor_ode(initial_vals, tf, tau):  
+    '''
+    initial_vals: array of arrays containing intitial positions and velocites for each planet.
+    tf: final time 
+    tau: time step
+    
+    returns the orbit of the planet for specficed time length with given initial values
+    '''
+    
+    # unpack variables 
     r0, v0 = initial_vals
     
+    # index variables to carteisan values 
     x0 = r0[0]
     y0 = r0[1]
     z0 = r0[2]
@@ -257,16 +280,20 @@ def get_coor_ode(initial_vals, tf, tau):
     vy0 = v0[1]
     vz0 = v0[2]
     
+    # set up initial array 
     w = [x0,y0,z0,vx0,vy0,vz0]
 
     t0 = 0
     tf = tf
     tau = tau
     
+    # create time array 
     t = np.arange(t0,tf,tau)
 
+    # calculate new positions
     sol = odeint(acc,w,t)
 
+    # unpack solution 
     x = sol[:,0] * (1.496*10**11)
     y = sol[:,1] * (1.496*10**11)
     z = sol[:,2] * (1.496*10**11)
@@ -274,12 +301,19 @@ def get_coor_ode(initial_vals, tf, tau):
     vy = sol[:,4]
     vz = sol[:,5]
     
+    # return orbital solution as numpy array
     orbit = np.array([[x],[y],[z]])
     
     return orbit
 
-def calc_all_orbits(initial_vals, tf, tau):
-
+def calc_all_orbits(planet_vals, tf, tau):
+     '''
+    initial_vals: array of arrays containing intitial positions and velocites for each planet.
+    tf: final time 
+    tau: time step
+    
+    returns the orbit for all planets in the given planet array 
+    '''
     all_orbits = []
 
     for i in range(len(planet_vals)):
@@ -290,6 +324,12 @@ def calc_all_orbits(initial_vals, tf, tau):
     return all_orbits
 
 def calculate_resid(all_orbits, correct_positions):
+    '''
+    all_orbits: array of all planet orbits
+    correct_positions: array of correct planet positions
+    
+    returns the error between the the correct planet positions and the predicted orbit
+    '''
     
     # calculating predicted positions (r)
     r_orbits = []
